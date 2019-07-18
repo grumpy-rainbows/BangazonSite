@@ -23,7 +23,7 @@
     item.Quantity = item.Products.Count();
         <tr>
             <td>
-               <a href=@($"http://localhost:5000/Products/GetProducts/{item.ProductTypeId}")>
+               <a href=@($"http://localhost:5000/Products/GetProductType/{item.ProductTypeId}")>
                             @Html.DisplayFor(modelItem => item.Label)</a> (@item.Quantity)
                 <ul>
                     @{ 
