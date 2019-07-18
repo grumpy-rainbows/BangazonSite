@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace Bangazon.Models
 {
-    public class ProductTypeViewModel
+    public class ProductTypesViewModel
     {
         public ProductType ProductType { get; set; }
         public int Count { get; set; }
+        public List<GroupedProducts> GroupedProducts { get; set; }
     }
 }
