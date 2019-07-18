@@ -4,8 +4,10 @@ using Bangazon.Data;
 
 namespace Bangazon.Models.ProductViewModels
 {
-  public class ProductListViewModel
-  {
-    public IEnumerable<Product> Products { get; set; }
-  }
+    public class ProductListViewModel
+    {
+        public ProductType ProductType { get; set; }
+        public int Count { get; set; }
+        public IEnumerable<Product> Products { get; set; }
+    }
 }
