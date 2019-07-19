@@ -29,10 +29,17 @@ namespace Bangazon.Controllers
         public async Task<IActionResult> Index()
         {
             //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            //var model = new OrderDetailViewModel();
 
             var user = await GetCurrentUserAsync();
 
             var openOrder = await _context.Order.SingleOrDefaultAsync(o => o.User == user && o.PaymentTypeId == null);
+
+            //model.Order = openOrder;
+            
+            //model.LineItems.ToList().ForEach(e => new SelectListItem{
+
+            //});
 
             var applicationDbContext =
                 _context.Order
@@ -48,6 +55,9 @@ namespace Bangazon.Controllers
         // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            var user = await GetCurrentUserAsync();
+            var model = new OrderDetailViewModel();
+
             if (id == null)
             {
                 return NotFound();
@@ -58,14 +68,23 @@ namespace Bangazon.Controllers
                 .Include(o => o.User)
                  .Include(o => o.OrderProducts)
                  .ThenInclude(op => op.Product)
+                 .Where(u => u.UserId == user.Id)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
+
+            model.Order = order;
+            model.LineItems = order.OrderProducts.Select(element => new OrderLineItem
+            {
+                Product = element.Product,
+                Units = element.Product.Quantity,
+                Cost = element.Product.Price
+            });
 
             if (order == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(model);
         }
 
         // GET: Orders/Create
