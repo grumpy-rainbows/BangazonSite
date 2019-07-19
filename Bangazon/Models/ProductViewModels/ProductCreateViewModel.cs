@@ -9,7 +9,7 @@ namespace Bangazon.Models.ProductViewModels
     public class ProductCreateViewModel
     {
         public Product Product { get; set; }
-        public List<Product> AvailableProductType { get; set; }
+        public List<ProductType> AvailableProductType { get; set; }
 
         // NOTE: Here we use an expression bodied, read-only property
         //       AND the ?. operator
@@ -23,7 +23,7 @@ namespace Bangazon.Models.ProductViewModels
                     return null;
                 }
 
-                var apt = AvailableProductType?.Select(p => new SelectListItem(p.Title, p.ProductId.ToString())).ToList();
+                var apt = AvailableProductType?.Select(p => new SelectListItem(p.Label, p.ProductTypeId.ToString())).ToList();
                 apt.Insert(0, new SelectListItem("Select product", null));
 
                 return apt;

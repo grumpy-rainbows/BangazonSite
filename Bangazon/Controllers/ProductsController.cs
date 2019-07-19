@@ -9,6 +9,7 @@ using Bangazon.Data;
 using Bangazon.Models;
 using Bangazon.Models.ProductViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bangazon.Controllers
 {
@@ -49,18 +50,18 @@ namespace Bangazon.Controllers
 
             return View(product);
         }
-
+        [Authorize]
         // GET: Products/Create
         public async Task<IActionResult> Create()
         {
             var viewModel = new ProductCreateViewModel
             {
-                AvailableProductType = await _context.Product.ToListAsync(),
+                AvailableProductType = await _context.ProductType.ToListAsync(),
             };
             return View(viewModel);
 
         }
-
+        [Authorize]
         // POST: Products/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -70,17 +71,18 @@ namespace Bangazon.Controllers
         {
             ModelState.Remove("Product.User");
             ModelState.Remove("Product.UserId");
-            ModelState.Remove("Book.ProductType");
+            ModelState.Remove("Product.ProductType");
 
             if (ModelState.IsValid)
             {
                 var Product = viewModel.Product;
                 var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+                Product.UserId = currentUser.Id;
                 _context.Add(Product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            viewModel.AvailableProductType = await _context.Product.ToListAsync();
+            viewModel.AvailableProductType = await _context.ProductType.ToListAsync();
             return View(viewModel);
         }
 
