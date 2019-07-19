@@ -9,9 +9,11 @@ using Bangazon.Data;
 using Bangazon.Models;
 using Microsoft.AspNetCore.Identity;
 using Bangazon.Models.OrderViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bangazon.Controllers
 {
+    [Authorize]
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,20 +28,25 @@ namespace Bangazon.Controllers
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+
+            var user = await GetCurrentUserAsync();
+
+            var openOrder = await _context.Order.SingleOrDefaultAsync(o => o.User == user && o.PaymentTypeId == null);
 
             var applicationDbContext =
                 _context.Order
                 .Include(o => o.PaymentType)
                 .Include(o => o.User)
                 .Include(o => o.OrderProducts)
-                    .ThenInclude(o => o.Product);
+                    .ThenInclude(o => o.Product)
+                    .Where(u => u.UserId == user.Id);
 
             return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Orders/Details/5
-        public async Task<IActionResult> Details(int? id, OrderDetailViewModel viewModel)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -50,17 +57,13 @@ namespace Bangazon.Controllers
                 .Include(o => o.PaymentType)
                 .Include(o => o.User)
                  .Include(o => o.OrderProducts)
-                 .ThenInclude(o => o.Product)
+                 .ThenInclude(op => op.Product)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
 
             if (order == null)
             {
                 return NotFound();
             }
-            viewModel.Order = order;
-            
-            var orderToAdd = await _context.Order
-                .Include(o => o.OrderId = order.Id)
 
             return View(order);
         }
