@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Bangazon.Controllers
 {
-    [Authorize]
+ 
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -52,7 +52,7 @@ namespace Bangazon.Controllers
 
             return View(product);
         }
-        //[Authorize]
+        [Authorize]
         // GET: Products/Create
         public async Task<IActionResult> Create()
         {
@@ -63,7 +63,7 @@ namespace Bangazon.Controllers
             return View(viewModel);
 
         }
-        //[Authorize]
+        [Authorize]
         // POST: Products/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -74,10 +74,10 @@ namespace Bangazon.Controllers
             ModelState.Remove("Product.User");
             //ModelState.Remove("Product.ProductType");
             ModelState.Remove("Product.UserId");
-            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
 
             if (ModelState.IsValid)
             {
+                var currentUser = await _userManager.GetUserAsync(HttpContext.User);
                 var Product = viewModel.Product;
                 Product.UserId = currentUser.Id;
                 _context.Add(Product);
