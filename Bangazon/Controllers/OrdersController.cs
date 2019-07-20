@@ -69,11 +69,17 @@ namespace Bangazon.Controllers
         }
 
         // GET: Orders/Create
-        public IActionResult Create()
+        /*public IActionResult Create()*/
+        public async Task<IActionResult> Create()
         {
-            ViewData["PaymentTypeId"] = new SelectList(_context.PaymentType, "PaymentTypeId", "AccountNumber");
-            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id");
-            return View();
+            /*ViewData["PaymentTypeId"] = new SelectList(_context.PaymentType, "PaymentTypeId", "AccountNumber");
+            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id");*/
+            var viewModel = new OrderCreateViewModel
+            {
+                AvailableProducts = await _context.Product.ToListAsync(),
+            };
+            return View(viewModel);
+            /*return View();*/
         }
 
         // POST: Orders/Create
@@ -81,9 +87,10 @@ namespace Bangazon.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderId,DateCreated,DateCompleted,UserId,PaymentTypeId")] Order order)
+        /*public async Task<IActionResult> Create([Bind("OrderId,DateCreated,DateCompleted,UserId,PaymentTypeId")] Order order)*/
+        public async Task<IActionResult> Create(OrderCreateViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            /*if (ModelState.IsValid)
             {
                 _context.Add(order);
                 await _context.SaveChangesAsync();
@@ -91,7 +98,24 @@ namespace Bangazon.Controllers
             }
             ViewData["PaymentTypeId"] = new SelectList(_context.PaymentType, "PaymentTypeId", "AccountNumber", order.PaymentTypeId);
             ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", order.UserId);
-            return View(order);
+            return View(order);*/
+
+            /*ModelState.Remove("Book.Author");
+            ModelState.Remove("Book.Owner");
+            ModelState.Remove("Book.OwnerId");*/
+
+            if (ModelState.IsValid)
+            {
+                var order = viewModel.Order;
+                var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+                order.UserId = currentUser.Id;
+                _context.Add(order);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            viewModel.AvailableProducts = await _context.Product.ToListAsync();
+            return View(viewModel);
         }
 
         // GET: Orders/Edit/5

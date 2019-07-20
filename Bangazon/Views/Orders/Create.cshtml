@@ -1,4 +1,4 @@
-﻿@model Bangazon.Models.Order
+﻿@model Bangazon.Models.OrderViewModels.OrderCreateViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,17 +13,21 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="DateCompleted" class="control-label"></label>
-                <input asp-for="DateCompleted" class="form-control" />
-                <span asp-validation-for="DateCompleted" class="text-danger"></span>
+                <label asp-for="Order.DateCompleted" class="control-label"></label>
+                <input asp-for="Order.DateCompleted" class="form-control" />
+                <span asp-validation-for="Order.DateCompleted" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+                <label asp-for="Order.UserId" class="control-label"></label>
+                <select asp-for="Order.UserId" class="form-control" asp-items="ViewBag.UserId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="PaymentTypeId" class="control-label"></label>
-                <select asp-for="PaymentTypeId" class ="form-control" asp-items="ViewBag.PaymentTypeId"></select>
+                <label asp-for="Order.PaymentTypeId" class="control-label"></label>
+                <select asp-for="Order.PaymentTypeId" class="form-control" asp-items="ViewBag.PaymentTypeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="AvailableProducts" class="control-label"></label>
+                <select asp-for="AvailableProducts" class="form-control" asp-items="@Model.ProductOptions"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
