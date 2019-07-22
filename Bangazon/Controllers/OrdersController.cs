@@ -30,14 +30,12 @@ namespace Bangazon.Controllers
         {
             var user = await GetCurrentUserAsync();
 
-            var openOrder = await _context.Order.SingleOrDefaultAsync(o => o.User == user && o.PaymentTypeId == null);
-
             var applicationDbContext =
                 _context.Order
                 .Include(o => o.PaymentType)
                 .Include(o => o.User)
                 .Include(o => o.OrderProducts)
-                    .ThenInclude(o => o.Product)
+                    .ThenInclude(op => op.Product)
                     .Where(u => u.UserId == user.Id);
 
             return View(await applicationDbContext.ToListAsync());
@@ -63,12 +61,15 @@ namespace Bangazon.Controllers
                 .FirstOrDefaultAsync(m => m.OrderId == id);
 
             model.Order = order;
-            model.LineItems = order.OrderProducts.Select(element => new OrderLineItem
-            {
-                Product = element.Product,
-                Units = element.Product.Quantity,
-                Cost = element.Product.Price
-            });
+
+            model.LineItems = order.OrderProducts
+                .GroupBy(op => op.Product)
+                .Select(element => new OrderLineItem
+                {
+                    Product = element.Key,
+                    Units = element.Select(e => e.Product).Count(),
+                    Cost = element.Key.Price * element.Select(e => e.ProductId).Count()
+                });
 
             if (order == null)
             {
@@ -76,6 +77,7 @@ namespace Bangazon.Controllers
             }
 
             return View(model);
+
         }
 
         // GET: Orders/Create
