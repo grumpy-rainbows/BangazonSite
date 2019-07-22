@@ -88,8 +88,8 @@ namespace Bangazon.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         /*public async Task<IActionResult> Create([Bind("OrderId,DateCreated,DateCompleted,UserId,PaymentTypeId")] Order order)*/
-        public async Task<IActionResult> Create(OrderCreateViewModel viewModel)
-        {
+        /*public async Task<IActionResult> Create(OrderCreateViewModel viewModel)
+        {*/
             /*if (ModelState.IsValid)
             {
                 _context.Add(order);
@@ -100,11 +100,7 @@ namespace Bangazon.Controllers
             ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", order.UserId);
             return View(order);*/
 
-            /*ModelState.Remove("Book.Author");
-            ModelState.Remove("Book.Owner");
-            ModelState.Remove("Book.OwnerId");*/
-
-            if (ModelState.IsValid)
+            /*if (ModelState.IsValid)
             {
                 var order = viewModel.Order;
                 var currentUser = await _userManager.GetUserAsync(HttpContext.User);
@@ -115,8 +111,8 @@ namespace Bangazon.Controllers
             }
 
             viewModel.AvailableProducts = await _context.Product.ToListAsync();
-            return View(viewModel);
-        }
+            return View(viewModel);*/
+        /*}*/
 
         // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
