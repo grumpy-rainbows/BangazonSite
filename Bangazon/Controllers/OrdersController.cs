@@ -28,18 +28,14 @@ namespace Bangazon.Controllers
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-
             var user = await GetCurrentUserAsync();
-
-            var openOrder = await _context.Order.SingleOrDefaultAsync(o => o.User == user && o.PaymentTypeId == null);
 
             var applicationDbContext =
                 _context.Order
                 .Include(o => o.PaymentType)
                 .Include(o => o.User)
                 .Include(o => o.OrderProducts)
-                    .ThenInclude(o => o.Product)
+                    .ThenInclude(op => op.Product)
                     .Where(u => u.UserId == user.Id);
 
             return View(await applicationDbContext.ToListAsync());
@@ -48,6 +44,9 @@ namespace Bangazon.Controllers
         // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            var user = await GetCurrentUserAsync();
+            var model = new OrderDetailViewModel();
+
             if (id == null)
             {
                 return NotFound();
@@ -58,14 +57,27 @@ namespace Bangazon.Controllers
                 .Include(o => o.User)
                  .Include(o => o.OrderProducts)
                  .ThenInclude(op => op.Product)
+                 .Where(u => u.UserId == user.Id)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
+
+            model.Order = order;
+
+            model.LineItems = order.OrderProducts
+                .GroupBy(op => op.Product)
+                .Select(element => new OrderLineItem
+                {
+                    Product = element.Key,
+                    Units = element.Select(e => e.Product).Count(),
+                    Cost = element.Key.Price * element.Select(e => e.ProductId).Count()
+                });
 
             if (order == null)
             {
                 return NotFound();
             }
 
-            return View(order);
+            return View(model);
+
         }
 
         // GET: Orders/Create
