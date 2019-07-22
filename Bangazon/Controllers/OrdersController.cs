@@ -28,18 +28,9 @@ namespace Bangazon.Controllers
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            //var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-            //var model = new OrderDetailViewModel();
-
             var user = await GetCurrentUserAsync();
 
             var openOrder = await _context.Order.SingleOrDefaultAsync(o => o.User == user && o.PaymentTypeId == null);
-
-            //model.Order = openOrder;
-            
-            //model.LineItems.ToList().ForEach(e => new SelectListItem{
-
-            //});
 
             var applicationDbContext =
                 _context.Order
