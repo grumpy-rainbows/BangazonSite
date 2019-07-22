@@ -23,8 +23,13 @@
     
         <tr>
             <td>
-               <a href=@($"http://localhost:5000/Products/GetProductType/{item.TypeId}")>
-                            @Html.DisplayFor(modelItem => item.TypeName)</a> (@item.ProductCount)
+            <li>
+                <a asp-controller="ProductTypes" asp-action="Details" asp-route-id="@item.TypeId">
+                    @Html.DisplayFor(modelItem => item.TypeName)
+                </a>
+                (@item.ProductCount)
+            </li>
+
                 <ul>
                     @{ 
                         foreach (var product in item.Products)
