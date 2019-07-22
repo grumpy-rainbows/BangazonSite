@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<Bangazon.Models.Product>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -6,3 +8,18 @@
     <h1 class="display-4">Welcome to Bangazon!</h1>
     @*<p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>*@
 </div>
+
+        <dl>
+            <h2>Recently Added Items</h2>
+        </dl>
+
+    <div>
+        @foreach (var item in Model)
+        {
+            <a asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId">
+                <dl>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </dl>
+            </a>
+        }
+    </div>
