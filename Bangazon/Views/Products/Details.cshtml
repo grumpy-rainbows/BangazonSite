@@ -37,19 +37,8 @@
 
     </dl>
     <div>
-        <form asp-controller="OrderProducts" asp-action="Create" asp-route-id="@Model.ProductId">
+        <form asp-controller="OrderProducts" asp-action="Index" asp-route-id="@Model.ProductId">
             <input type="submit" value="Add to Order" class="btn btn-primary" /> &nbsp; <a asp-action="Edit" asp-route-id="@Model.ProductId">Update</a>
         </form>
     </div>
-    @*
-        <a asp-controller="OrderProducts" asp-action="Index">
-            Add to Order
-        </a>
-        <div>
-            <a asp-action="Index"> Add to Order </a>
-        </div>
-        <div>
-            <a asp-action="Edit" asp-route-id="@Model.ProductId">Edit</a> |
-            <a asp-action="Index">Back to List</a>
-        </div>
-    *@
+    

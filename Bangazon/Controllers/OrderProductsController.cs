@@ -91,6 +91,7 @@ namespace Bangazon.Controllers
                 var orderProduct = new OrderProduct();
                 orderProduct.ProductId = productToAdd.ProductId;
                 orderProduct.OrderId = order.OrderId;
+                productToAdd.Quantity = productToAdd.Quantity - 1;
                 _context.Add(orderProduct);
                 await _context.SaveChangesAsync();
             }
@@ -101,6 +102,7 @@ namespace Bangazon.Controllers
                 var orderProduct = new OrderProduct();
                 orderProduct.ProductId = productToAdd.ProductId;
                 orderProduct.OrderId = openOrder.OrderId;
+                productToAdd.Quantity = productToAdd.Quantity - 1;
                 _context.Add(orderProduct);
                 await _context.SaveChangesAsync();
             }
