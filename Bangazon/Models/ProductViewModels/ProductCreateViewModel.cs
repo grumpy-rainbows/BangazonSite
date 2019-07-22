@@ -16,7 +16,7 @@ namespace Bangazon.Models.ProductViewModels
         {
             get
             {
-                if(AvailableProductType ==null)
+                if (AvailableProductType == null)
                 {
                     return null;
                 }
