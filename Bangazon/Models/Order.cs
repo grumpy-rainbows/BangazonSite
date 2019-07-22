@@ -9,6 +9,7 @@ namespace Bangazon.Models
   public class Order
   {
     [Key]
+    [Display(Name = "Order Number")]
     public int OrderId {get;set;}
 
     [Required]
