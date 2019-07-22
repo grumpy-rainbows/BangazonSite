@@ -22,7 +22,7 @@ namespace Bangazon.Models.ProductViewModels
                 }
 
                 var apt = AvailableProductType?.Select(p => new SelectListItem(p.Label, p.ProductTypeId.ToString())).ToList();
-                apt.Insert(0, new SelectListItem("Select product", null));
+                apt.Insert(0, new SelectListItem("Select product", "Add Products"));
 
                 return apt;
             }

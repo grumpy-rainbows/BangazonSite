@@ -9,7 +9,7 @@ namespace Bangazon.Models
   public class PaymentType
   {
     [Key]
-    public int PaymentTypeId { get; set; }
+        public int PaymentTypeId { get; set; }
 
     [Required]
     [DataType(DataType.Date)]
