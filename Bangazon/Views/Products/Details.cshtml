@@ -34,12 +34,22 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Quantity)
         </dd>
+
     </dl>
     <div>
-        <a asp-action="Index"> Add to Order </a>
+        <form asp-controller="OrderProducts" asp-action="Create" asp-route-id="@Model.ProductId">
+            <input type="submit" value="Add to Order" class="btn btn-primary" /> &nbsp; <a asp-action="Edit" asp-route-id="@Model.ProductId">Update</a>
+        </form>
     </div>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.ProductId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+    @*
+        <a asp-controller="OrderProducts" asp-action="Index">
+            Add to Order
+        </a>
+        <div>
+            <a asp-action="Index"> Add to Order </a>
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.ProductId">Edit</a> |
+            <a asp-action="Index">Back to List</a>
+        </div>
+    *@
