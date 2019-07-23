@@ -33,6 +33,21 @@ namespace Bangazon.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        //Adding a search bar for products
+
+        public async Task<IActionResult> Search(string searchProducts)
+        {
+            var productsSearch = from p in _context.Product
+                                 select p;
+
+            if (!String.IsNullOrEmpty(searchProducts))
+            {
+                productsSearch = productsSearch.Where(s => s.Title.Contains(searchProducts));
+            }
+
+            return View(await productsSearch.ToListAsync());
+        }
+
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
