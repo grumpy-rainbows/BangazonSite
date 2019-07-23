@@ -12,16 +12,29 @@
     <dl class="row">
         @foreach (var item in Model.LineItems)
         {
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(modelItem => item.Product.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(modelItem => item.Product.Title)
-        </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.Product.Title)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.Product.Title)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.Product.Price)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.Product.Price)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(modelItem => item.Units)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(modelItem => item.Units)
+            <hr>
+            </dd>
         }
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Order.OrderId">Edit</a> |
+    |
     <a asp-action="Index">Back to List</a>
 </div>

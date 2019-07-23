@@ -7,44 +7,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bangazon.Data;
 using Bangazon.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace Bangazon.Controllers
 {
-    public class ProductTypesController : Controller
+    public class PaymentTypesController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProductTypesController(ApplicationDbContext context)
+        public PaymentTypesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: ProductTypes
-        public async Task<IActionResult>Index()
+        // GET: PaymentTypes
+        public async Task<IActionResult> Index()
         {
-            var model = new ProductTypesViewModel();
-
-            // Build list of Product instances for display in view
-            // LINQ is awesome
-            model.GroupedProducts = await (
-                from t in _context.ProductType
-                join p in _context.Product
-                on t.ProductTypeId equals p.ProductTypeId
-                group new { t, p } by new { t.ProductTypeId, t.Label } into grouped
-                select new GroupedProducts
-                {
-                    TypeId = grouped.Key.ProductTypeId,
-                    TypeName = grouped.Key.Label,
-                    ProductCount = grouped.Select(x => x.p.ProductId).Count(),
-                    Products = grouped.Select(x => x.p).Take(3)
-                }).ToListAsync();
-
-            return View(model);
+            var applicationDbContext = _context.PaymentType.Include(p => p.User);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: ProductTypes/Details/5
+        // GET: PaymentTypes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -52,40 +34,47 @@ namespace Bangazon.Controllers
                 return NotFound();
             }
 
-            var productType = await _context.ProductType
-                .Include(pT => pT.Products)
-                .FirstOrDefaultAsync(m => m.ProductTypeId == id);
-            if (productType == null)
+            var paymentType = await _context.PaymentType
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(m => m.PaymentTypeId == id);
+            if (paymentType == null)
             {
                 return NotFound();
             }
 
-            return View(productType);
+            return View(paymentType);
         }
 
-        // GET: ProductTypes/Create
+        // GET: PaymentTypes/Create
         public IActionResult Create()
         {
+            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id");
             return View();
         }
 
-        // POST: ProductTypes/Create
+        // POST: PaymentTypes/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductTypeId,Label")] ProductType productType)
+        public async Task<IActionResult> Create([Bind("PaymentTypeId,DateCreated,Description,AccountNumber,UserId")] PaymentType paymentType)
         {
+            ModelState.Remove("DateCreated");
+            ModelState.Remove("PaymentTypeId");
+            ModelState.Remove("UserId");
+            ModelState.Remove("User");
+
             if (ModelState.IsValid)
             {
-                _context.Add(productType);
+                _context.Add(paymentType);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(productType);
+            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", paymentType.UserId);
+            return View(paymentType);
         }
 
-        // GET: ProductTypes/Edit/5
+        // GET: PaymentTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -93,22 +82,23 @@ namespace Bangazon.Controllers
                 return NotFound();
             }
 
-            var productType = await _context.ProductType.FindAsync(id);
-            if (productType == null)
+            var paymentType = await _context.PaymentType.FindAsync(id);
+            if (paymentType == null)
             {
                 return NotFound();
             }
-            return View(productType);
+            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", paymentType.UserId);
+            return View(paymentType);
         }
 
-        // POST: ProductTypes/Edit/5
+        // POST: PaymentTypes/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductTypeId,Label")] ProductType productType)
+        public async Task<IActionResult> Edit(int id, [Bind("PaymentTypeId,DateCreated,Description,AccountNumber,UserId")] PaymentType paymentType)
         {
-            if (id != productType.ProductTypeId)
+            if (id != paymentType.PaymentTypeId)
             {
                 return NotFound();
             }
@@ -117,12 +107,12 @@ namespace Bangazon.Controllers
             {
                 try
                 {
-                    _context.Update(productType);
+                    _context.Update(paymentType);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductTypeExists(productType.ProductTypeId))
+                    if (!PaymentTypeExists(paymentType.PaymentTypeId))
                     {
                         return NotFound();
                     }
@@ -133,10 +123,11 @@ namespace Bangazon.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(productType);
+            ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", paymentType.UserId);
+            return View(paymentType);
         }
 
-        // GET: ProductTypes/Delete/5
+        // GET: PaymentTypes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -144,30 +135,31 @@ namespace Bangazon.Controllers
                 return NotFound();
             }
 
-            var productType = await _context.ProductType
-                .FirstOrDefaultAsync(m => m.ProductTypeId == id);
-            if (productType == null)
+            var paymentType = await _context.PaymentType
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(m => m.PaymentTypeId == id);
+            if (paymentType == null)
             {
                 return NotFound();
             }
 
-            return View(productType);
+            return View(paymentType);
         }
 
-        // POST: ProductTypes/Delete/5
+        // POST: PaymentTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var productType = await _context.ProductType.FindAsync(id);
-            _context.ProductType.Remove(productType);
+            var paymentType = await _context.PaymentType.FindAsync(id);
+            _context.PaymentType.Remove(paymentType);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ProductTypeExists(int id)
+        private bool PaymentTypeExists(int id)
         {
-            return _context.ProductType.Any(e => e.ProductTypeId == id);
+            return _context.PaymentType.Any(e => e.PaymentTypeId == id);
         }
     }
 }
