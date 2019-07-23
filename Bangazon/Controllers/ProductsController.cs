@@ -26,6 +26,22 @@ namespace Bangazon.Controllers
         }
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
+        public async Task<IActionResult> MyProducts()
+        {
+            var currentUser = await GetCurrentUserAsync();
+            var ApplicationDbContext = _context.Product.Where(p => p.UserId == currentUser.Id && p.Active == true)
+                            .Include(p => p.ProductType)
+                            .Include(p => p.User);
+            var viewModel = ApplicationDbContext.Select(p => new ProductDetailViewModel
+            {
+                Product = p,
+                orderProducts = _context.OrderProduct.Where(op => op.ProductId == p.ProductId).ToList()
+            });
+
+            return View(viewModel);
+
+        }
+
         // GET: Products
         public async Task<IActionResult> Index()
         {
@@ -146,15 +162,15 @@ namespace Bangazon.Controllers
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
+            var currentUser = await GetCurrentUserAsync();
             var product = await _context.Product
                 .Include(p => p.ProductType)
                 .Include(p => p.User)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
+            if (id == null)
+            {
+                return NotFound();
+            }
             if (product == null)
             {
                 return NotFound();
