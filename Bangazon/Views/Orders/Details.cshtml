@@ -29,10 +29,9 @@
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(modelItem => item.Units)
+                <hr>
+                @Html.ActionLink("Remove Product", "Delete", "OrderProducts", new { ProductId = item.Product.ProductId, OrderId = Model.Order.OrderId  })
             </dd>
-            <div>
-                @Html.ActionLink("Remove Product", "Delete", "OrderProducts", new { id = item.Product.ProductId})
-            </div>
                 <hr>
         }
     </dl>

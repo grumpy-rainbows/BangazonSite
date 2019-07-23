@@ -168,9 +168,9 @@ namespace Bangazon.Controllers
         }
 
         // GET: OrderProducts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? ProductId, int? OrderId)
         {
-            if (id == null)
+            if (ProductId == null || OrderId == null)
             {
                 return NotFound();
             }
@@ -178,7 +178,8 @@ namespace Bangazon.Controllers
             var orderProduct = await _context.OrderProduct
                 .Include(o => o.Order)
                 .Include(o => o.Product)
-                .FirstOrDefaultAsync(m => m.OrderProductId == id);
+                
+                .FirstOrDefaultAsync(m => m.OrderId == OrderId && m.ProductId == ProductId);
             if (orderProduct == null)
             {
                 return NotFound();
@@ -195,7 +196,7 @@ namespace Bangazon.Controllers
             var orderProduct = await _context.OrderProduct.FindAsync(id);
             _context.OrderProduct.Remove(orderProduct);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Orders");
         }
 
         private bool OrderProductExists(int id)
