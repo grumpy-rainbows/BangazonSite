@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Bangazon.Data;
 using Bangazon.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Bangazon.Controllers
 {
@@ -57,29 +58,58 @@ namespace Bangazon.Controllers
         }
 
         // GET: OrderProducts/Create
-        public IActionResult Create()
+        /*public IActionResult Create()
         {
             ViewData["OrderId"] = new SelectList(_context.Order, "OrderId", "UserId");
-            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "Description");
+            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "Title");
             return View();
-        }
+        }*/
 
         // POST: OrderProducts/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderProductId,OrderId,ProductId")] OrderProduct orderProduct)
+        public async Task<IActionResult> Create( int id)
         {
-            if (ModelState.IsValid)
+            // Find the product requested
+            Product productToAdd = await _context.Product.SingleOrDefaultAsync(p => p.ProductId == id);
+
+            var user = await GetCurrentUserAsync();
+
+            // See if the user has an open order
+            var openOrder = await _context.Order.SingleOrDefaultAsync(o => o.User == user && o.PaymentTypeId == null);
+
+            if (openOrder == null)
             {
+                // Create new order
+                var order = new Order();
+                order.UserId = user.Id;
+                _context.Add(order);
+
+                // Add product to order, i.e. create OrderProduct
+                var orderProduct = new OrderProduct();
+                orderProduct.ProductId = productToAdd.ProductId;
+                orderProduct.OrderId = order.OrderId;
+                productToAdd.Quantity = productToAdd.Quantity - 1;
                 _context.Add(orderProduct);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["OrderId"] = new SelectList(_context.Order, "OrderId", "UserId", orderProduct.OrderId);
-            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "Description", orderProduct.ProductId);
-            return View(orderProduct);
+
+            else
+            {
+                // Add product to existing order, i.e. create OrderProduct
+                var orderProduct = new OrderProduct();
+                orderProduct.ProductId = productToAdd.ProductId;
+                orderProduct.OrderId = openOrder.OrderId;
+                productToAdd.Quantity = productToAdd.Quantity - 1;
+                _context.Add(orderProduct);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index", "Orders");
+
+            
         }
 
         // GET: OrderProducts/Edit/5
