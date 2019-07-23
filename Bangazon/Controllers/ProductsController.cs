@@ -18,6 +18,9 @@ namespace Bangazon.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private object buttonSearch;
+
+        public object AcceptButton { get; private set; }
 
         public ProductsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
@@ -45,8 +48,12 @@ namespace Bangazon.Controllers
                 productsSearch = productsSearch.Where(s => s.Title.Contains(searchProducts));
             }
 
+            //Allows for enter keypress
+            this.AcceptButton = this.buttonSearch;
+
             return View(await productsSearch.ToListAsync());
         }
+
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)

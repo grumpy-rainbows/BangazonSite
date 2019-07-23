@@ -47,10 +47,7 @@
                             <form asp-controller="Products" asp-action="Search" method="get">
                                 <input type="text" placeholder="Search Products" name="searchProducts" value="@ViewData["currentFilter"]" />
                                 <input type="submit" value="Search" class="btn btn-sm btn-info" />
-                                <select class="search-by" name="searchby" value="@ViewData["searchBy"]">
-                                    <option value="0">All</option>
-                                    <option value="1">Product</option>
-                                </select>
+                                
                             </form>
                         </li>
                     </ul>
