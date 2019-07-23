@@ -5,14 +5,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Bangazon.Models;
+using Bangazon.Data;
 
 namespace Bangazon.Controllers
 {
     public class HomeController : Controller
     {
+
+        private readonly ApplicationDbContext _context;
+
+        public HomeController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        //Gathering most recently added items
         public IActionResult Index()
         {
-            return View();
+            var applicationDbContext = _context.Product.Take(20).OrderByDescending(p => p.DateCreated);
+            return View(applicationDbContext.ToList());
         }
 
         public IActionResult Privacy()
