@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Bangazon.Models;
 using Bangazon.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bangazon.Controllers
 {
@@ -25,6 +26,7 @@ namespace Bangazon.Controllers
             var applicationDbContext = _context.Product.Take(20).OrderByDescending(p => p.DateCreated);
             return View(applicationDbContext.ToList());
         }
+
 
         public IActionResult Privacy()
         {
