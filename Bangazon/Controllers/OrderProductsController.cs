@@ -70,7 +70,7 @@ namespace Bangazon.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create( int id)
+        public async Task<IActionResult> Create(int id)
         {
             // Find the product requested
             Product productToAdd = await _context.Product.SingleOrDefaultAsync(p => p.ProductId == id);
@@ -109,7 +109,7 @@ namespace Bangazon.Controllers
 
             return RedirectToAction("Index", "Orders");
 
-            
+
         }
 
         // GET: OrderProducts/Edit/5
@@ -168,9 +168,9 @@ namespace Bangazon.Controllers
         }
 
         // GET: OrderProducts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? ProductId, int? OrderId)
         {
-            if (id == null)
+            if (ProductId == null || OrderId == null)
             {
                 return NotFound();
             }
@@ -178,25 +178,29 @@ namespace Bangazon.Controllers
             var orderProduct = await _context.OrderProduct
                 .Include(o => o.Order)
                 .Include(o => o.Product)
-                .FirstOrDefaultAsync(m => m.OrderProductId == id);
+
+                .FirstOrDefaultAsync(m => m.OrderId == OrderId && m.ProductId == ProductId);
             if (orderProduct == null)
             {
                 return NotFound();
             }
+            _context.Remove(orderProduct);
+            await _context.SaveChangesAsync();
 
-            return View(orderProduct);
+            //return View(orderProduct);
+            return RedirectToAction("Index", "Orders");
         }
 
         // POST: OrderProducts/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var orderProduct = await _context.OrderProduct.FindAsync(id);
-            _context.OrderProduct.Remove(orderProduct);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    var orderProduct = await _context.OrderProduct.FindAsync(id);
+        //    _context.OrderProduct.Remove(orderProduct);
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction("Index", "Orders");
+        //}
 
         private bool OrderProductExists(int id)
         {
