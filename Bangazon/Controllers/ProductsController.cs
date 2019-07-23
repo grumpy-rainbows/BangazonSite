@@ -18,6 +18,9 @@ namespace Bangazon.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private object buttonSearch;
+
+        public object AcceptButton { get; private set; }
 
         public ProductsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
@@ -48,6 +51,25 @@ namespace Bangazon.Controllers
             var applicationDbContext = _context.Product.Include(p => p.ProductType).Include(p => p.User);
             return View(await applicationDbContext.ToListAsync());
         }
+
+        //Adding a search bar for products
+
+        public async Task<IActionResult> Search(string searchProducts)
+        {
+            var productsSearch = from p in _context.Product
+                                 select p;
+
+            if (!String.IsNullOrEmpty(searchProducts))
+            {
+                productsSearch = productsSearch.Where(s => s.Title.Contains(searchProducts));
+            }
+
+            //Allows for enter keypress
+            this.AcceptButton = this.buttonSearch;
+
+            return View(await productsSearch.ToListAsync());
+        }
+
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -158,7 +180,7 @@ namespace Bangazon.Controllers
             ViewData["UserId"] = new SelectList(_context.ApplicationUsers, "Id", "Id", product.UserId);
             return View(product);
         }
-
+        [Authorize]
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -178,7 +200,7 @@ namespace Bangazon.Controllers
 
             return View(product);
         }
-
+        [Authorize]
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
